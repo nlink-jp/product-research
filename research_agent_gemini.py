@@ -89,9 +89,10 @@ def gather_information(
 ) -> str:
     """Google Search Grounding を使って製品・サービス情報を収集する"""
 
-    _progress("Gemini + Google Search Grounding で調査中...")
+    _progress("Gemini + Google Search Grounding で調査中...\n")
 
-    response = client.models.generate_content(
+    parts: list[str] = []
+    for chunk in client.models.generate_content_stream(
         model=RESEARCH_MODEL,
         contents=(
             f"以下の製品・サービスについて包括的な調査を実施してください：\n\n"
@@ -103,21 +104,23 @@ def gather_information(
             system_instruction=RESEARCH_SYSTEM_PROMPT,
             tools=[types.Tool(google_search=types.GoogleSearch())],
         ),
-    )
+    ):
+        if chunk.text:
+            parts.append(chunk.text)
+            print(chunk.text, end="", flush=True, file=sys.stderr)
 
-    if verbose and response.candidates:
-        for candidate in response.candidates:
-            meta = getattr(candidate, "grounding_metadata", None)
-            if meta:
-                chunks = getattr(meta, "grounding_chunks", []) or []
-                for chunk in chunks[:5]:  # 先頭5件だけ表示
-                    web = getattr(chunk, "web", None)
-                    if web:
-                        _progress(f"  [参照] {getattr(web, 'uri', '')}")
+        if verbose and chunk.candidates:
+            for candidate in chunk.candidates:
+                meta = getattr(candidate, "grounding_metadata", None)
+                if meta:
+                    for grounding_chunk in getattr(meta, "grounding_chunks", []) or []:
+                        web = getattr(grounding_chunk, "web", None)
+                        if web:
+                            _progress(f"\n  [参照] {getattr(web, 'uri', '')}")
 
-    result = response.text or ""
+    print(file=sys.stderr)  # ストリーム末尾の改行
     _progress("情報収集フェーズ完了")
-    return result
+    return "".join(parts)
 
 
 # ──────────────────────────────────────────────
@@ -131,7 +134,8 @@ def extract_structured_report(
 ) -> ResearchReport | None:
     """収集した調査テキストから構造化レポートを抽出する"""
 
-    response = client.models.generate_content(
+    parts: list[str] = []
+    for chunk in client.models.generate_content_stream(
         model=EXTRACTION_MODEL,
         contents=(
             f"以下の調査テキストから **{product_name}** の構造化レポートを生成してください。\n\n"
@@ -143,14 +147,20 @@ def extract_structured_report(
             response_mime_type="application/json",
             response_schema=ResearchReport,
         ),
-    )
+    ):
+        if chunk.text:
+            parts.append(chunk.text)
+            print(".", end="", flush=True, file=sys.stderr)  # JSON なので内容でなくドットで進捗表示
 
-    if not response.text:
+    print(file=sys.stderr)  # ストリーム末尾の改行
+
+    full_text = "".join(parts)
+    if not full_text:
         _progress("レスポンスが空でした")
         return None
 
     try:
-        return ResearchReport.model_validate_json(response.text)
+        return ResearchReport.model_validate_json(full_text)
     except Exception as e:
         _progress(f"JSON パース失敗: {e}")
         return None
