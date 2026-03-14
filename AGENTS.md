@@ -62,12 +62,20 @@ uv run research_agent.py # スクリプト実行
 - `anthropic.types` から必要な型をインポートする
 - `pyright` で 0 errors を維持する
 
-### Claude API 呼び出し
+### Claude API 呼び出し（Anthropic 版）
 
 - モデルは `claude-opus-4-6` 固定。変更する場合はコメントで理由を記載する
 - Phase 1（情報収集）では `thinking={"type": "adaptive"}` を使用する
 - `pause_turn` への対応を必ず実装する（サーバーサイドツールの継続処理）
 - API キーをコードにハードコードしない
+
+### Gemini API 呼び出し（Google 版）
+
+- モデルは `gemini-2.5-pro` 固定。変更する場合はコメントで理由を記載する
+- Phase 1 は `tools=[types.Tool(google_search=types.GoogleSearch())]` で Search Grounding を有効化する
+- Phase 2 は `response_mime_type="application/json"` + `response_schema=ResearchReport` で構造化抽出する
+- `response.text` は `None` になり得るため必ずガード処理を入れる
+- API キーは `GOOGLE_API_KEY` 環境変数で渡す。コードにハードコードしない
 
 ---
 
@@ -75,18 +83,19 @@ uv run research_agent.py # スクリプト実行
 
 ```
 product_research/
-├── research_agent.py   # メインスクリプト（単一ファイル構成を維持する）
-├── pyproject.toml      # プロジェクト定義・依存パッケージ
-├── uv.lock             # ロックファイル（コミット対象）
-├── .python-version     # Python バージョン固定（コミット対象）
+├── research_agent.py          # Anthropic 版メインスクリプト
+├── research_agent_gemini.py   # Google Gemini 版メインスクリプト
+├── pyproject.toml             # プロジェクト定義・依存パッケージ
+├── uv.lock                    # ロックファイル（コミット対象）
+├── .python-version            # Python バージョン固定（コミット対象）
 ├── .gitignore
 ├── README.md
 ├── CHANGELOG.md
-├── AGENTS.md           # 本ファイル
-└── reports/            # 生成レポートの保存先（.gitignore 済み）
+├── AGENTS.md                  # 本ファイル
+└── reports/                   # 生成レポートの保存先（.gitignore 済み）
 ```
 
-**単一ファイル構成を維持する**: 機能追加でファイルを分割したい場合は、先に設計を検討してから行う。
+**モデル・ユーティリティの共有:** Pydantic モデルおよびユーティリティ関数は `research_agent.py` で定義し、`research_agent_gemini.py` からインポートして再利用する。重複定義しない。
 
 ---
 

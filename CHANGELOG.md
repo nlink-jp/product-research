@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Google Gemini 版調査エージェント (`research_agent_gemini.py`)
+- Google Search Grounding による情報収集（Phase 1）
+- Gemini の `response_schema` による構造化 JSON 抽出（Phase 2）
+- 保存ファイル名に `_gemini_` サフィックスを付与して Anthropic 版と区別
+
 ## [0.1.0] - 2026-03-14
 
 ### Added
