@@ -48,6 +48,12 @@ uv run research_agent.py # スクリプト実行
 - モデルを追加・変更した場合は `ResearchReport` 最上位クラスへの影響を確認すること
 - `Optional[str]` フィールドには `default=None` を明示する
 
+### 型ヒント
+
+- SDK が提供する型を積極的に使う（例: `list[dict]` ではなく `list[MessageParam]`）
+- `anthropic.types` から必要な型をインポートする
+- `pyright` で 0 errors を維持する
+
 ### Claude API 呼び出し
 
 - モデルは `claude-opus-4-6` 固定。変更する場合はコメントで理由を記載する
@@ -156,6 +162,9 @@ chore: anthropic を 0.84.0 に更新
 ```bash
 # 構文エラーがないか確認
 uv run python -m py_compile research_agent.py
+
+# 型チェック
+uv run pyright research_agent.py
 
 # ヘルプが表示されるか（基本的な動作確認）
 uv run research_agent.py --help

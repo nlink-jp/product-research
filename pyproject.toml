@@ -7,3 +7,8 @@ dependencies = [
     "anthropic>=0.84.0",
     "pydantic>=2.12.5",
 ]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.408",
+]

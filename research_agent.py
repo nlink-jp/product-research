@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Optional
 
 import anthropic
+from anthropic.types import MessageParam
 from pydantic import BaseModel, Field
 
 
@@ -130,7 +131,7 @@ def gather_information(
 ) -> str:
     """Web 検索を使って製品・サービス情報を収集する（サーバーサイドツールループ）"""
 
-    messages: list[dict] = [
+    messages: list[MessageParam] = [
         {
             "role": "user",
             "content": (
@@ -176,7 +177,7 @@ def gather_information(
             # pause_turn: 元のユーザーメッセージ + アシスタント応答を維持して再送
             messages = [
                 messages[0],
-                {"role": "assistant", "content": response.content},
+                MessageParam(role="assistant", content=response.content),
             ]
         else:
             _progress(f"停止理由: {response.stop_reason}")
