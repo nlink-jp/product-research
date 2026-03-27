@@ -1,6 +1,6 @@
 [project]
 name = "product-research"
-version = "0.1.0"
+version = "0.2.0"
 description = "Product and service research agent — outputs overview, ToS, privacy, and data security as structured reports"
 requires-python = ">=3.11"
 dependencies = [

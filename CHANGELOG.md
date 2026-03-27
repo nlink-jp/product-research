@@ -7,26 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-28
+
 ### Added
-- Gemini 版に 429 / RESOURCE_EXHAUSTED エラー対策の動的リトライ処理を追加
-  (`_call_with_retry`: 指数バックオフ＋ジッター、最大 5 回、初回待機 5 秒)
+- **Gemini agent** (`research_agent_gemini.py`): Google Search Grounding for Phase 1 research, `response_schema`-based structured JSON extraction for Phase 2. Output filenames include `_gemini_` suffix to distinguish from the Anthropic variant.
+- **`AIAgentBehavior` model**: Structured fields for AI-agent behaviour presence, autonomous scope, user controls, audit logging, rollback, and risk. Exposed as investigation axis 8 with a dedicated `## AI Agent Behaviour and Controls` section in Markdown reports.
+- **Gemini retry logic** (`_call_with_retry`): Handles `429 / RESOURCE_EXHAUSTED` with exponential back-off + jitter (up to 5 retries, initial wait 5 s).
 
 ### Changed
-- `research_agent_gemini.py` を自己完結型に変更。Pydantic モデル・ユーティリティ関数を内包し、`research_agent.py` への依存を解消
-- Google Gemini 版を Google AI Studio API キー方式から Vertex AI（Application Default Credentials）方式に変更
-- 環境変数を `GOOGLE_API_KEY` から `GOOGLE_CLOUD_PROJECT` / `GOOGLE_CLOUD_LOCATION` に変更
-- Phase 1・2 をストリーミングに変更（Phase 1 は調査テキストをリアルタイム表示、Phase 2 はドットで進捗表示）
-- Anthropic 版 Phase 1 を `client.messages.create()` から `client.messages.stream()` に変更（調査テキストをリアルタイム stderr 表示）
-- Anthropic 版 Phase 2 に開始・完了メッセージを追加（`messages.parse()` はブロッキングのため呼び出し前後で進捗を表示）
-
-### Added
-- `AIAgentBehavior` モデルを追加。AI エージェント的動作の有無・自律動作範囲・ユーザー制御手段・監査ログ・ロールバック・リスクを構造化フィールドで出力
-- 調査観点に「AI エージェント動作」を追加（観点 8）
-- Markdown レポートに「## AI エージェント動作と制御」セクションを追加
-- Google Gemini 版調査エージェント (`research_agent_gemini.py`)
-- Google Search Grounding による情報収集（Phase 1）
-- Gemini の `response_schema` による構造化 JSON 抽出（Phase 2）
-- 保存ファイル名に `_gemini_` サフィックスを付与して Anthropic 版と区別
+- **Gemini backend switched to Vertex AI (ADC)** — replaced Google AI Studio API key authentication. Environment variables changed from `GOOGLE_API_KEY` to `GOOGLE_CLOUD_PROJECT` / `GOOGLE_CLOUD_LOCATION`.
+- **`research_agent_gemini.py` is now self-contained** — Pydantic models and utility functions are inlined; dependency on `research_agent.py` removed.
+- **Streaming output**: Phase 1 research text streams to stderr in real time; Phase 2 shows dot progress. Applied to both Gemini and Anthropic variants.
+- Anthropic Phase 1 switched from `client.messages.create()` to `client.messages.stream()`; Phase 2 gained start/completion messages around the blocking `messages.parse()` call.
+- Migrated to nlink-jp organisation; `pyproject.toml` description translated to English and `[project.urls]` added.
 
 ## [0.1.0] - 2026-03-14
 
@@ -44,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--no-save` オプション（ファイル保存なし）
 - uv による Python 仮想環境・依存関係管理
 
-[Unreleased]: https://github.com/nlink-jp/product-research/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/nlink-jp/product-research/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/nlink-jp/product-research/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/nlink-jp/product-research/releases/tag/v0.1.0
