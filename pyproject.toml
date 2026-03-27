@@ -1,13 +1,16 @@
 [project]
 name = "product-research"
 version = "0.1.0"
-description = "製品・サービス調査エージェント — 概要・ToS・データ取り扱い・セキュリティを構造化レポートで出力"
+description = "Product and service research agent — outputs overview, ToS, privacy, and data security as structured reports"
 requires-python = ">=3.11"
 dependencies = [
     "anthropic>=0.84.0",
     "google-genai>=1.67.0",
     "pydantic>=2.12.5",
 ]
+
+[project.urls]
+Repository = "https://github.com/nlink-jp/product-research"
 
 [dependency-groups]
 dev = [
