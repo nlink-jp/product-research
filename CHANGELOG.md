@@ -44,5 +44,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--no-save` オプション（ファイル保存なし）
 - uv による Python 仮想環境・依存関係管理
 
-[Unreleased]: https://github.com/your-org/product-research/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/your-org/product-research/releases/tag/v0.1.0
+[Unreleased]: https://github.com/nlink-jp/product-research/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/nlink-jp/product-research/releases/tag/v0.1.0
